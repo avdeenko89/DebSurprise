@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>See You in Rio!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Video & Music Section */
+        .section-carnival {
+            min-height: 100vh;
+            background: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .video-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.3) 0%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.5) 100%
+            );
+            z-index: 2;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carnival-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .carnival-title {
+            font-family: 'Pacifico', cursive;
+            font-size: 4rem;
+            color: #FEDD00;
+            text-shadow:
+                0 0 20px rgba(254,221,0,0.8),
+                0 0 40px rgba(254,221,0,0.5),
+                3px 3px 0 #009739;
+            margin-bottom: 20px;
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 20px rgba(254,221,0,0.8), 0 0 40px rgba(254,221,0,0.5), 3px 3px 0 #009739; }
+            50% { text-shadow: 0 0 40px rgba(254,221,0,1), 0 0 80px rgba(254,221,0,0.8), 3px 3px 0 #009739; }
+        }
+
+        .carnival-subtitle {
+            font-size: 1.5rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+        }
+
+        /* Music Player */
+        .music-player {
+            background: linear-gradient(145deg, rgba(0,151,57,0.9), rgba(0,39,118,0.9));
+            border-radius: 25px;
+            padding: 30px 40px;
+            border: 4px solid #FEDD00;
+            box-shadow: 0 0 40px rgba(254,221,0,0.5);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .player-title {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.5rem;
+            color: #FEDD00;
+            margin-bottom: 20px;
+        }
+
+        .play-btn {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #FEDD00, #FFB800);
+            border: none;
+            cursor: pointer;
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow:
+                0 10px 30px rgba(0,0,0,0.3),
+                inset 0 -5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow:
+                0 15px 40px rgba(0,0,0,0.4),
+                inset 0 -5px 20px rgba(0,0,0,0.1);
+        }
+
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-btn.playing {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .dancing-emojis {
+            font-size: 2.5rem;
+            margin-top: 15px;
+            animation: dance 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes dance {
+            from { transform: translateX(-10px) rotate(-5deg); }
+            to { transform: translateX(10px) rotate(5deg); }
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            color: white;
+        }
+
+        .volume-control input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .volume-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #FEDD00;
+            cursor: pointer;
+        }
+
+        /* Sound Button */
+        .sound-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #FEDD00, #009739);
+            border: 4px solid #002776;
+            cursor: pointer;
+            font-size: 2rem;
+            z-index: 200;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .sound-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        /* Sparkles */
+        .sparkle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #FEDD00;
+            border-radius: 50%;
+            animation: sparkle 1.5s ease-in-out infinite;
+            z-index: 50;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 768px) {
+            .carnival-title {
+                font-size: 2.5rem;
+            }
+
+            .carnival-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .music-player {
+                padding: 25px 30px;
+                margin: 0 20px;
+                max-width: 90%;
+            }
+
+            .play-btn {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+
+            .dancing-emojis {
+                font-size: 2rem;
+            }
+
+            .sound-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.5rem;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        @media screen and (max-width: 380px) {
+            .carnival-title {
+                font-size: 2rem;
+            }
+
+            .carnival-subtitle {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Video & Music Section -->
+    <section class="section-carnival">
+        <!-- Video Background -->
+        <div class="video-container">
+            <video autoplay muted loop playsinline id="carnival-video">
+                <source src="0202.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- Content Overlay -->
+        <div class="carnival-content">
+            <h1 class="carnival-title">See You in Rio! 🇧🇷</h1>
+            <p class="carnival-subtitle">Get ready for the time of our lives...</p>
+
+            <!-- Music Player -->
+            <div class="music-player">
+                <p class="player-title">🎵 Samba Time 🎵</p>
+                <button class="play-btn" id="playBtn">▶️</button>
+                <div class="dancing-emojis">💃🕺💃🕺💃</div>
+                <div class="volume-control">
+                    <span>🔈</span>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="70">
+                    <span>🔊</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sound Toggle Button (floating) -->
+    <button class="sound-btn" id="soundBtn" title="Toggle Music">🔊</button>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop autoplay>
+        <source src="Spiller - Batucada.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const colors = ['#009739', '#FEDD00', '#002776', '#FFFFFF', '#FF6B6B', '#4ECDC4', '#FFE66D'];
+
+        // Confetti System
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        const confetti = [];
+
+        class ConfettiPiece {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 15 + 5;
+                this.speedY = Math.random() * 3 + 2;
+                this.speedX = Math.random() * 4 - 2;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 10 - 5;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.shape = Math.floor(Math.random() * 3);
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotationSpeed;
+
+                if (this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.fillStyle = this.color;
+
+                if (this.shape === 0) {
+                    ctx.fillRect(-this.size / 2, -this.size / 4, this.size, this.size / 2);
+                } else if (this.shape === 1) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(0, -this.size / 2);
+                    ctx.lineTo(this.size / 2, this.size / 2);
+                    ctx.lineTo(-this.size / 2, this.size / 2);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // Create confetti pieces (fewer on mobile for performance)
+        const isMobile = window.innerWidth <= 768;
+        const confettiCount = isMobile ? 60 : 150;
+        for (let i = 0; i < confettiCount; i++) {
+            confetti.push(new ConfettiPiece());
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confetti.forEach(piece => {
+                piece.update();
+                piece.draw();
+            });
+            requestAnimationFrame(animateConfetti);
+        }
+
+        // Create random sparkles (fewer on mobile)
+        function createSparkles() {
+            const sparkleCount = isMobile ? 10 : 20;
+            for (let i = 0; i < sparkleCount; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + 'vw';
+                sparkle.style.top = Math.random() * 100 + 'vh';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                sparkle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                document.body.appendChild(sparkle);
+            }
+        }
+
+        // Audio elements and controls
+        const bgMusic = document.getElementById('bgMusic');
+        const soundBtn = document.getElementById('soundBtn');
+        const playBtn = document.getElementById('playBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        let isPlaying = false;
+
+        // Volume control
+        bgMusic.volume = 0.7;
+        volumeSlider.addEventListener('input', (e) => {
+            bgMusic.volume = e.target.value / 100;
+        });
+
+        // Play button in music player
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                bgMusic.pause();
+                playBtn.textContent = '▶️';
+                playBtn.classList.remove('playing');
+            } else {
+                bgMusic.play();
+                playBtn.textContent = '🎶';
+                playBtn.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+            updateSoundBtn();
+        });
+
+        // Floating sound button
+        soundBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                bgMusic.pause();
+                playBtn.textContent = '▶️';
+                playBtn.classList.remove('playing');
+            } else {
+                bgMusic.play();
+                playBtn.textContent = '🎶';
+                playBtn.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+            updateSoundBtn();
+        });
+
+        function updateSoundBtn() {
+            soundBtn.textContent = isPlaying ? '🔊' : '🔇';
+        }
+
+        // Start everything immediately on page load
+        function startParty() {
+            animateConfetti();
+            createSparkles();
+
+            // Try to autoplay music
+            bgMusic.play().then(() => {
+                isPlaying = true;
+                playBtn.textContent = '🎶';
+                playBtn.classList.add('playing');
+                updateSoundBtn();
+            }).catch(() => {
+                // If autoplay blocked, start on first user interaction
+                console.log('Audio autoplay blocked - will start on interaction');
+                document.addEventListener('click', () => {
+                    if (!isPlaying) {
+                        bgMusic.play();
+                        isPlaying = true;
+                        playBtn.textContent = '🎶';
+                        playBtn.classList.add('playing');
+                        updateSoundBtn();
+                    }
+                }, { once: true });
+            });
+        }
+
+        // Start immediately
+        startParty();
+    </script>
+</body>
+</html>

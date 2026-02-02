@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Invited!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Invitation Section */
+        .section-invite {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #009739 0%, #FEDD00 50%, #002776 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .invitation-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(254,221,0,0.9));
+            border-radius: 30px;
+            padding: 50px 60px;
+            box-shadow:
+                0 0 60px rgba(254,221,0,0.8),
+                0 0 100px rgba(0,151,57,0.5),
+                0 20px 60px rgba(0,0,0,0.3);
+            animation: pulse 2s ease-in-out infinite, float 3s ease-in-out infinite;
+            border: 5px solid #009739;
+            max-width: 600px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 60px rgba(254,221,0,0.8), 0 0 100px rgba(0,151,57,0.5), 0 20px 60px rgba(0,0,0,0.3); }
+            50% { box-shadow: 0 0 80px rgba(254,221,0,1), 0 0 120px rgba(0,151,57,0.8), 0 20px 60px rgba(0,0,0,0.3); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .flag-stripe {
+            height: 8px;
+            background: linear-gradient(90deg, #009739 33%, #FEDD00 33%, #FEDD00 66%, #002776 66%);
+            border-radius: 4px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 4rem;
+            color: #002776;
+            text-shadow: 3px 3px 0 #FEDD00, 6px 6px 0 #009739;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #009739;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .destination {
+            font-family: 'Pacifico', cursive;
+            font-size: 3rem;
+            background: linear-gradient(45deg, #009739, #FEDD00, #002776);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow 3s linear infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .date {
+            font-size: 1.8rem;
+            color: #002776;
+            font-weight: 900;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: #FEDD00;
+            border-radius: 50px;
+            display: inline-block;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .emoji-parade {
+            font-size: 3rem;
+            margin: 20px 0;
+            animation: dance 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes dance {
+            from { transform: translateX(-10px) rotate(-5deg); }
+            to { transform: translateX(10px) rotate(5deg); }
+        }
+
+        .love-message {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            color: #002776;
+            font-style: italic;
+        }
+
+        /* YES Button - Big and colorful */
+        .yes-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 20px 60px;
+            font-family: 'Pacifico', cursive;
+            font-size: 2.5rem;
+            color: white;
+            background: linear-gradient(145deg, #009739, #00C04B);
+            border: 5px solid #FEDD00;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow:
+                0 0 30px rgba(0,151,57,0.6),
+                0 10px 30px rgba(0,0,0,0.3),
+                inset 0 -5px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            animation: yesGlow 1.5s ease-in-out infinite, yesBounce 0.5s ease-in-out infinite;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-decoration: none;
+        }
+
+        .yes-btn:hover {
+            transform: scale(1.15);
+            box-shadow:
+                0 0 50px rgba(0,151,57,0.8),
+                0 0 80px rgba(254,221,0,0.5),
+                0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        @keyframes yesGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(0,151,57,0.6), 0 10px 30px rgba(0,0,0,0.3), inset 0 -5px 20px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 0 50px rgba(254,221,0,0.8), 0 0 80px rgba(0,151,57,0.6), 0 10px 30px rgba(0,0,0,0.3), inset 0 -5px 20px rgba(0,0,0,0.2); }
+        }
+
+        @keyframes yesBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* NO Button - Small and dancing around the edge */
+        .no-btn {
+            position: fixed;
+            padding: 8px 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: #002776;
+            background: rgba(255,255,255,0.8);
+            border: 2px solid #002776;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 150;
+            transition: transform 0.1s;
+            animation: sambaDance 0.3s ease-in-out infinite alternate;
+        }
+
+        .no-btn:hover {
+            transform: scale(0.9);
+        }
+
+        @keyframes sambaDance {
+            0% { transform: rotate(-15deg) translateY(-3px); }
+            100% { transform: rotate(15deg) translateY(3px); }
+        }
+
+        /* Floating decorations */
+        .decoration {
+            position: absolute;
+            font-size: 4rem;
+            animation: floatAround 10s ease-in-out infinite;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .section-invite .decoration:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+        .section-invite .decoration:nth-child(2) { top: 20%; right: 10%; animation-delay: 2s; }
+        .section-invite .decoration:nth-child(3) { bottom: 25%; left: 10%; animation-delay: 4s; }
+        .section-invite .decoration:nth-child(4) { bottom: 20%; right: 5%; animation-delay: 6s; }
+        .section-invite .decoration:nth-child(5) { top: 50%; left: 3%; animation-delay: 1s; }
+        .section-invite .decoration:nth-child(6) { top: 40%; right: 3%; animation-delay: 3s; }
+
+        @keyframes floatAround {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -20px) rotate(10deg); }
+            50% { transform: translate(0, -40px) rotate(0deg); }
+            75% { transform: translate(-20px, -20px) rotate(-10deg); }
+        }
+
+        /* Sparkles */
+        .sparkle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #FEDD00;
+            border-radius: 50%;
+            animation: sparkle 1.5s ease-in-out infinite;
+            z-index: 50;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 768px) {
+            .invitation-card {
+                padding: 30px 25px;
+                margin: 15px;
+                border-radius: 20px;
+                max-width: 95%;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+                text-shadow: 2px 2px 0 #FEDD00, 4px 4px 0 #009739;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+                letter-spacing: 2px;
+                margin-bottom: 20px;
+            }
+
+            .destination {
+                font-size: 2rem;
+            }
+
+            .date {
+                font-size: 1.2rem;
+                padding: 12px 20px;
+            }
+
+            .emoji-parade {
+                font-size: 2rem;
+                margin: 15px 0;
+            }
+
+            .love-message {
+                font-size: 1rem;
+                margin-top: 20px;
+            }
+
+            .flag-stripe {
+                height: 6px;
+                margin-bottom: 20px;
+            }
+
+            .decoration:nth-child(5),
+            .decoration:nth-child(6) {
+                display: none;
+            }
+
+            .decoration {
+                font-size: 2.5rem;
+            }
+
+            .yes-btn {
+                padding: 15px 40px;
+                font-size: 1.8rem;
+            }
+
+            .no-btn {
+                padding: 6px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media screen and (max-width: 380px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .destination {
+                font-size: 1.6rem;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+                letter-spacing: 1px;
+            }
+
+            .date {
+                font-size: 1rem;
+                padding: 10px 15px;
+            }
+
+            .emoji-parade {
+                font-size: 1.5rem;
+            }
+
+            .invitation-card {
+                padding: 25px 20px;
+            }
+        }
+
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+            .invitation-card {
+                padding: 20px 30px;
+                transform: scale(0.85);
+            }
+
+            @keyframes float {
+                0%, 100% { transform: translateY(0) scale(0.85); }
+                50% { transform: translateY(-10px) scale(0.85); }
+            }
+
+            .section-invite {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Invitation Section -->
+    <section class="section-invite">
+        <!-- Floating Decorations -->
+        <div class="decoration">🎭</div>
+        <div class="decoration">💃</div>
+        <div class="decoration">🦜</div>
+        <div class="decoration">🎪</div>
+        <div class="decoration">🪇</div>
+        <div class="decoration">🥁</div>
+
+        <div class="invitation-card">
+            <div class="flag-stripe"></div>
+            <h1>You're Invited!</h1>
+            <div class="emoji-parade">🎉💃🕺🎊🪅</div>
+            <p class="subtitle">Pack your bags, baby!</p>
+            <p class="destination">Rio Carnival 2026</p>
+            <div class="date">February 13-18</div>
+            <p class="love-message">Let's dance together under the Brazilian stars! ❤️</p>
+
+            <!-- Big YES Button - links to yes.html -->
+            <a href="yes.html" class="yes-btn">YES! 💃🎉</a>
+
+            <div class="flag-stripe" style="margin-top: 30px; margin-bottom: 0;"></div>
+        </div>
+
+        <!-- Dancing NO Button -->
+        <button class="no-btn" id="noBtn">no 😢</button>
+    </section>
+
+    <script>
+        const colors = ['#009739', '#FEDD00', '#002776', '#FFFFFF', '#FF6B6B', '#4ECDC4', '#FFE66D'];
+
+        // Confetti System
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        const confetti = [];
+
+        class ConfettiPiece {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 15 + 5;
+                this.speedY = Math.random() * 3 + 2;
+                this.speedX = Math.random() * 4 - 2;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 10 - 5;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.shape = Math.floor(Math.random() * 3);
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotationSpeed;
+
+                if (this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.fillStyle = this.color;
+
+                if (this.shape === 0) {
+                    ctx.fillRect(-this.size / 2, -this.size / 4, this.size, this.size / 2);
+                } else if (this.shape === 1) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(0, -this.size / 2);
+                    ctx.lineTo(this.size / 2, this.size / 2);
+                    ctx.lineTo(-this.size / 2, this.size / 2);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // Create confetti pieces (fewer on mobile for performance)
+        const isMobile = window.innerWidth <= 768;
+        const confettiCount = isMobile ? 60 : 150;
+        for (let i = 0; i < confettiCount; i++) {
+            confetti.push(new ConfettiPiece());
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confetti.forEach(piece => {
+                piece.update();
+                piece.draw();
+            });
+            requestAnimationFrame(animateConfetti);
+        }
+
+        // Create random sparkles (fewer on mobile)
+        function createSparkles() {
+            const sparkleCount = isMobile ? 10 : 20;
+            for (let i = 0; i < sparkleCount; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + 'vw';
+                sparkle.style.top = Math.random() * 100 + 'vh';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                sparkle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                document.body.appendChild(sparkle);
+            }
+        }
+
+        // Start animations
+        animateConfetti();
+        createSparkles();
+
+        // Dancing NO button - moves around the edges
+        const noBtn = document.getElementById('noBtn');
+        let noBtnProgress = 0;
+        const speed = 0.003;
+        const padding = 20;
+
+        function moveNoButton() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+
+            let x, y;
+            const p = noBtnProgress % 4;
+
+            if (p < 1) {
+                x = padding + (viewportWidth - btnWidth - padding * 2) * p;
+                y = padding;
+            } else if (p < 2) {
+                x = viewportWidth - btnWidth - padding;
+                y = padding + (viewportHeight - btnHeight - padding * 2) * (p - 1);
+            } else if (p < 3) {
+                x = viewportWidth - btnWidth - padding - (viewportWidth - btnWidth - padding * 2) * (p - 2);
+                y = viewportHeight - btnHeight - padding;
+            } else {
+                x = padding;
+                y = viewportHeight - btnHeight - padding - (viewportHeight - btnHeight - padding * 2) * (p - 3);
+            }
+
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+
+            noBtnProgress += speed;
+            if (noBtnProgress >= 4) noBtnProgress = 0;
+
+            requestAnimationFrame(moveNoButton);
+        }
+
+        moveNoButton();
+
+        // When hovering over NO, make it run away faster
+        noBtn.addEventListener('mouseenter', () => {
+            noBtnProgress += 0.5;
+        });
+    </script>
+</body>
+</html>
