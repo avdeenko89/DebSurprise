@@ -540,6 +540,17 @@
         noBtn.addEventListener('mouseenter', () => {
             noBtnProgress += 0.5;
         });
+
+        // On mobile, make it run away on touch
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            noBtnProgress += 0.5;
+        });
+
+        // Also run away on click (works for both mobile and desktop)
+        noBtn.addEventListener('click', () => {
+            noBtnProgress += 0.5;
+        });
     </script>
 </body>
 </html>
