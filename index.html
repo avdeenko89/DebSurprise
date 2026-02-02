@@ -201,6 +201,9 @@
             z-index: 150;
             transition: transform 0.1s;
             animation: sambaDance 0.3s ease-in-out infinite alternate;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .no-btn:hover {
@@ -536,28 +539,23 @@
 
         moveNoButton();
 
-        // When hovering over NO, make it run away faster
-        noBtn.addEventListener('mouseenter', () => {
+        // Use pointer events for unified mouse/touch handling
+        noBtn.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            noBtnProgress += 0.7;
+        });
+
+        noBtn.addEventListener('pointerenter', (e) => {
             noBtnProgress += 0.5;
         });
 
-        // On mobile, make it run away on touch - jump far and keep moving
-        noBtn.addEventListener('touchstart', (e) => {
+        noBtn.addEventListener('pointerup', (e) => {
             e.preventDefault();
-            e.stopPropagation();
-            noBtnProgress += 0.8; // Jump further on mobile
-        }, { passive: false });
-
-        noBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        }, { passive: false });
-
-        // Prevent click from firing after touch
-        noBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            noBtnProgress += 0.5;
         });
+
+        // Disable touch-action to prevent browser handling
+        noBtn.style.touchAction = 'none';
     </script>
 </body>
 </html>
