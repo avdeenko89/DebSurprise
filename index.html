@@ -310,8 +310,8 @@
             }
 
             .no-btn {
-                padding: 6px 15px;
-                font-size: 0.8rem;
+                padding: 10px 20px;
+                font-size: 0.9rem;
             }
         }
 
@@ -541,14 +541,21 @@
             noBtnProgress += 0.5;
         });
 
-        // On mobile, make it run away on touch
+        // On mobile, make it run away on touch - jump far and keep moving
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            noBtnProgress += 0.5;
-        });
+            e.stopPropagation();
+            noBtnProgress += 0.8; // Jump further on mobile
+        }, { passive: false });
 
-        // Also run away on click (works for both mobile and desktop)
-        noBtn.addEventListener('click', () => {
+        noBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, { passive: false });
+
+        // Prevent click from firing after touch
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             noBtnProgress += 0.5;
         });
     </script>
